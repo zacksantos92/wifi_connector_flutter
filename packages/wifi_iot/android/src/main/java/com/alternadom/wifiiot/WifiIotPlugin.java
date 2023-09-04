@@ -238,6 +238,7 @@ public class WifiIotPlugin
       resultMap.remove(requestCode);
       return true;
     }
+    return false;
   }
 
   @Override
@@ -984,7 +985,10 @@ public class WifiIotPlugin
           // listen for acitivty result
           resultMap.put(ACTIVITY_RESULT_REQUEST_CODE_ADD_NETWORKS, poResult);
         } else {
-          poResult.error("NoActivityError", "Activity object is null, are you running this from background?", "");
+          poResult.error(
+              "NoActivityError",
+              "Activity object is null, are you running this from background?",
+              "");
         }
       } else {
         // on Android 10 the intent is not available yet; instead, a message is shown in the
