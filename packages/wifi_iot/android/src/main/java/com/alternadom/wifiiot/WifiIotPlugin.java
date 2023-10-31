@@ -129,6 +129,29 @@ public class WifiIotPlugin
     moWiFiAPManager = null;
   }
 
+  /** Plugin registration. This is used for registering with v1 Android embedding. */
+  public static void registerWith(Registrar registrar) {
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), "wifi_iot");
+    final EventChannel eventChannel =
+        new EventChannel(registrar.messenger(), "plugins.wififlutter.io/wifi_scan");
+    final WifiIotPlugin wifiIotPlugin = new WifiIotPlugin();
+    wifiIotPlugin.initWithActivity(registrar.activity());
+    wifiIotPlugin.initWithContext(registrar.activeContext());
+    eventChannel.setStreamHandler(wifiIotPlugin);
+    channel.setMethodCallHandler(wifiIotPlugin);
+
+    registrar.addViewDestroyListener(
+        new ViewDestroyListener() {
+          @Override
+          public boolean onViewDestroy(FlutterNativeView view) {
+            wifiIotPlugin.cleanup();
+            return false;
+          }
+        });
+    registrar.addRequestPermissionsResultListener(wifiIotPlugin);
+    registrar.addActivityResultListener(wifiIotPlugin);
+  }
+
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     // initialize method and event channel and set handlers
@@ -157,6 +180,7 @@ public class WifiIotPlugin
     // init with activity
     initWithActivity(binding.getActivity());
     binding.addRequestPermissionsResultListener(this);
+    binding.addActivityResultListener(this);
   }
 
   @Override
@@ -170,6 +194,7 @@ public class WifiIotPlugin
     // init with activity
     initWithActivity(binding.getActivity());
     binding.addRequestPermissionsResultListener(this);
+    binding.addActivityResultListener(this);
   }
 
   @Override
